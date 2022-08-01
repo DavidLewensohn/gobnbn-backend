@@ -1,5 +1,5 @@
 const dbService = require('../../services/db.service')
-const logger = require('../../services/logger.service')
+// const logger = require('../../services/logger.service')
 const ObjectId = require('mongodb').ObjectId
 const asyncLocalStorage = require('../../services/als.service')
 const fs = require('fs')
@@ -14,7 +14,7 @@ async function query(filterBy = {}) {
 		return stays
 	} catch (err) {
 		console.log(err)
-		logger.error('cannot find stays', err)
+		// logger.error('cannot find stays', err)
 		throw err
 	}
 }
@@ -27,7 +27,7 @@ async function remove(stayId) {
 		console.log('dbug: stayId.ser:', deletedCount)
 		return deletedCount
 	} catch (err) {
-		logger.error(`cannot remove stay ${stayId}`, err)
+		// logger.error(`cannot remove stay ${stayId}`, err)
 		throw err
 	}
 }
@@ -38,7 +38,7 @@ async function add(stay) {
 		const addedStay = await collection.insertOne(stay)
 		return stay
 	} catch (err) {
-		logger.error('cannot insert stay', err)
+		// logger.error('cannot insert stay', err)
 		throw err
 	}
 }
@@ -78,7 +78,7 @@ async function getById(stayId) {
 		const stay = collection.findOne({_id: ObjectId(stayId)})
 		return stay
 	} catch (err) {
-		logger.error(`while finding stay ${stayId}`, err)
+		// logger.error(`while finding stay ${stayId}`, err)
 		throw err
 	}
 }
@@ -92,7 +92,7 @@ async function update(stay) {
 		stay._id = id
 		return stay
 	} catch (err) {
-		logger.error(`cannot update stay ${stayId}`, err)
+		// logger.error(`cannot update stay ${stayId}`, err)
 		throw err
 	}
 }
@@ -117,7 +117,7 @@ async function _saveStays() {
 			add(stay)
 		})
 	} catch (err) {
-		logger.error('cannot insert stays', err)
+		// logger.error('cannot insert stays', err)
 		throw err
 	}
 }
