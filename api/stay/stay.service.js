@@ -13,6 +13,7 @@ async function query(filterBy = {}) {
 
 		return stays
 	} catch (err) {
+		console.log(err)
 		logger.error('cannot find stays', err)
 		throw err
 	}
