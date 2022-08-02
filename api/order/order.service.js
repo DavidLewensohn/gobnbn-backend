@@ -4,29 +4,17 @@ const ObjectId = require('mongodb').ObjectId
 const asyncLocalStorage = require('../../services/als.service')
 const fs = require('fs')
 
-async function query(filterBy = {}) {
+async function query(filterBy = {}, loggedinUser) {
 	try {
-		const criteria = _buildCriteria(filterBy)
+		const criteria = _buildCriteria(filterBy, loggedinUser)
 		const collection = await dbService.getCollection('order')
 		const orders = await collection.find(criteria).toArray()
 		console.log('orders:', orders.length)
 
 		return orders
+
 	} catch (err) {
 		logger.error('cannot find orders', err)
-		throw err
-	}
-}
-
-async function remove(orderId) {
-	try {
-		const collection = await dbService.getCollection('order')
-		const criteria = {_id: ObjectId(orderId)}
-		const {deletedCount} = await collection.deleteOne(criteria)
-		console.log('dbug: orderId.ser:', deletedCount)
-		return deletedCount
-	} catch (err) {
-		logger.error(`cannot remove order ${orderId}`, err)
 		throw err
 	}
 }
@@ -42,11 +30,45 @@ async function add(order) {
 	}
 }
 
-function _buildCriteria(filterBy) {
+function _buildCriteria(filterBy, loggedinUser) {
 	console.log('filterBy:', filterBy)
 	var criteria = {}
+	//var userId = loggedinUser.appId
 
+	if (filterBy.type === "trips") {
+		console.log("Filter by trip")
+		criteria = { 'mainGuest.guestId': Number(filterBy.userId) }
+	}
+
+	if (filterBy.type === "orders") {
+		console.log("Filter by orders")
+		criteria.hostId = Number(filterBy.userId)
+	}
+
+	console.log("criteria: ", criteria)
 	return criteria
+}
+
+module.exports = {
+	query,
+	remove,
+	add,
+	update,
+	getById,
+}
+
+
+async function remove(orderId) {
+	try {
+		const collection = await dbService.getCollection('order')
+		const criteria = {_id: ObjectId(orderId)}
+		const {deletedCount} = await collection.deleteOne(criteria)
+		//console.log('dbug: orderId.ser:', deletedCount)
+		return deletedCount
+	} catch (err) {
+		logger.error(`cannot remove order ${orderId}`, err)
+		throw err
+	}
 }
 
 async function getById(orderId) {
@@ -74,15 +96,7 @@ async function update(order) {
 	}
 }
 
-module.exports = {
-	query,
-	remove,
-	add,
-	update,
-	getById,
-}
-
-_saveOrders()
+//_saveOrders()
 async function _saveOrders() {
 	var orders = require('../../services/order.json')
 	console.log('orders:', orders)

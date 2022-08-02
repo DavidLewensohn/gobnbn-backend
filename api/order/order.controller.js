@@ -5,8 +5,10 @@ const socketService = require('../../services/socket.service')
 const orderService = require('././order.service')
 
 async function getOrders(req, res) {
+	var loggedinUser = authService.validateToken(req.cookies.loginToken)
+	console.log("loggedinUser is: ",loggedinUser)
 	try {
-		const orders = await orderService.query(req.query)
+		const orders = await orderService.query(req.query, loggedinUser)
 		res.send(orders)
 	} catch (err) {
 		logger.error('Cannot get orders', err)
@@ -14,19 +16,65 @@ async function getOrders(req, res) {
 	}
 }
 
-async function deleteOrder(req, res) {
+async function addOrder(req, res) {
+	var loggedinUser = authService.validateToken(req.cookies.loginToken)
 	try {
-		const deletedCount = await orderService.remove(req.params.id)
-		if (deletedCount === 1) {
-			res.send({msg: 'Deleted successfully'})
-		} else {
-			res.status(400).send({err: 'Cannot remove order'})
-		}
+		const order = req.body
+		const addedOrder = await orderService.add(order)
+		return res.json(addedOrder)
 	} catch (err) {
-		logger.error('Failed to delete order', err)
-		res.status(500).send({err: 'Failed to delete order'})
+		logger.error('Failed to add order', err)
+		res.status(500).send({err: 'Failed to add order'})
 	}
 }
+
+module.exports = {
+	getOrders,
+	//getGuestOrders,
+	//getHostOrders,
+	//deleteOrder,
+	addOrder,
+	//getOrderById,
+	//updateOrder,
+}
+
+// async function getGuestOrders(req, res) {
+// 	var loggedinUser = authService.validateToken(req.cookies.loginToken)
+
+// 	try {
+// 		const orders = await orderService.query(req.query, loggedinUser)
+// 		res.send(orders)
+// 	} catch (err) {
+// 		logger.error('Cannot get orders', err)
+// 		res.status(500).send({err: 'Failed to get orders'})
+// 	}
+// }
+
+// async function getHostOrders(req, res) {
+// 	var loggedinUser = authService.validateToken(req.cookies.loginToken)
+	
+// 	try {
+// 		const orders = await orderService.query(req.query, loggedinUser)
+// 		res.send(orders)
+// 	} catch (err) {
+// 		logger.error('Cannot get orders', err)
+// 		res.status(500).send({err: 'Failed to get orders'})
+// 	}
+// }
+
+// async function deleteOrder(req, res) {
+// 	try {
+// 		const deletedCount = await orderService.remove(req.params.id)
+// 		if (deletedCount === 1) {
+// 			res.send({msg: 'Deleted successfully'})
+// 		} else {
+// 			res.status(400).send({err: 'Cannot remove order'})
+// 		}
+// 	} catch (err) {
+// 		logger.error('Failed to delete order', err)
+// 		res.status(500).send({err: 'Failed to delete order'})
+// 	}
+// }
 
 // async function addOrder(req, res) {
 
@@ -66,44 +114,27 @@ async function deleteOrder(req, res) {
 //     }
 // }
 
-async function addOrder(req, res) {
-	try {
-		const order = req.body
-		const addedOrder = await orderService.add(order)
-		return res.json(addedOrder)
-	} catch (err) {
-		logger.error('Failed to add order', err)
-		res.status(500).send({err: 'Failed to add order'})
-	}
-}
+// async function getOrderById(req, res) {
+// 	try {
+// 		const orderId = req.params.id
+// 		const order = await orderService.getById(orderId)
+// 		res.json(order)
+// 	} catch (err) {
+// 		logger.error('Failed to get order', err)
+// 		res.status(500).send({err: 'Failed to get order'})
+// 	}
+// }
 
-async function getOrderById(req, res) {
-	try {
-		const orderId = req.params.id
-		const order = await orderService.getById(orderId)
-		res.json(order)
-	} catch (err) {
-		logger.error('Failed to get order', err)
-		res.status(500).send({err: 'Failed to get order'})
-	}
-}
+// async function updateOrder(req, res) {
+// 	try {
+// 		const order = req.body
+// 		console.log('order:', order)
+// 		const updatedOrder = await orderService.update(order)
+// 		res.json(updatedOrder)
+// 	} catch (err) {
+// 		logger.error('Failed to update order', err)
+// 		res.status(500).send({err: 'Failed to update order'})
+// 	}
+// }
 
-async function updateOrder(req, res) {
-	try {
-		const order = req.body
-		console.log('order:', order)
-		const updatedOrder = await orderService.update(order)
-		res.json(updatedOrder)
-	} catch (err) {
-		logger.error('Failed to update order', err)
-		res.status(500).send({err: 'Failed to update order'})
-	}
-}
 
-module.exports = {
-	getOrders,
-	deleteOrder,
-	addOrder,
-	getOrderById,
-	updateOrder,
-}

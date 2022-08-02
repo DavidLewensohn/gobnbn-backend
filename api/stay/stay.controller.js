@@ -93,7 +93,7 @@ async function getStayById(req, res) {
   async function updateStay(req, res) {
     try {
       const stay = req.body;
-      console.log('stay:',stay);
+      //console.log('stay:',stay);
       const updatedStay = await stayService.update(stay);
       res.json(updatedStay);
     } catch (err) {
