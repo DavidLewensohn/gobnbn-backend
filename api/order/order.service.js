@@ -82,7 +82,7 @@ module.exports = {
 	getById,
 }
 
-_saveOrders()
+// _saveOrders()
 async function _saveOrders() {
 	var orders = require('../../services/order.json')
 	console.log('orders:', orders)
