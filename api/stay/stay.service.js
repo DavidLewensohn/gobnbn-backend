@@ -9,7 +9,7 @@ async function query(filterBy = {}) {
 		const criteria = _buildCriteria(filterBy)
 		const collection = await dbService.getCollection('stay')
 		const stays = await collection.find(criteria).toArray()
-		console.log('stays:', stays.length)
+		//console.log('stays:', stays.length)
 
 		return stays
 	} catch (err) {
@@ -49,6 +49,7 @@ function _buildCriteria(filterBy) {
 
 	if (filterBy.country) {
 		var txtCriteria = {$regex: filterBy.country, $options: 'i'}
+		console.log("filterBy.country - ", filterBy.country)
 		criteria = {
 			$or: [
 				{'address.country': txtCriteria},
